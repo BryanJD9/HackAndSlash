@@ -6,11 +6,13 @@ public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
     private Vector2 moveInput;
-    private Vector3 moveDirection;
 
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
     public float rotationSpeed = 720f;
+
+    private float verticalVelocity;
+    private float gravity = -20f; // temp value. google search recommends heavy gravity for h&s games
 
     private void Awake()
     {
@@ -25,7 +27,22 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        ApplyGravity();
         ApplyMovement();
+    }
+    private void ApplyGravity()
+    {
+        if (controller.isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = -2f; // Keep the player snapped to the ground
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+
+        // Apply the downward force
+        controller.Move(new Vector3(0, verticalVelocity, 0) * Time.deltaTime);
     }
 
     private void ApplyMovement()
