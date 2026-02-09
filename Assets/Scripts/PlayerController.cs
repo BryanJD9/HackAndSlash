@@ -10,74 +10,89 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
     public float rotationSpeed = 720f;
+    public float jumpHeight = 2f;
+    public float gravity = -30f; // Snappier gravity
 
     private float verticalVelocity;
-    private float gravity = -20f; // temp value. google search recommends heavy gravity for h&s games
-
-    void Start()
-    {
-        // Hide the mouse cursor and lock it to the center of the screen
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
+    private bool jumpRequested;
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
     }
 
-    // This method is called by the Player Input component
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
     }
 
+    public void OnJump(InputValue value)
+    {
+        // We set the request to true here; we will handle the logic in Update
+        if (value.isPressed)
+        {
+            jumpRequested = true;
+        }
+    }
+
     private void Update()
     {
-        ApplyGravity();
-        ApplyMovement();
-    }
-    private void ApplyGravity()
-    {
-        if (controller.isGrounded && verticalVelocity < 0)
-        {
-            verticalVelocity = -2f; // Keep the player snapped to the ground
-        }
-        else
-        {
-            verticalVelocity += gravity * Time.deltaTime;
-        }
+        Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
 
-        // Apply the downward force
-        controller.Move(new Vector3(0, verticalVelocity, 0) * Time.deltaTime);
+        // SINGLE MOVE CALL: This ensures isGrounded updates correctly for the next frame
+        controller.Move(finalMovement * Time.deltaTime);
     }
 
-    private void ApplyMovement()
+    private Vector3 CalculateHorizontalMovement()
     {
-        // 1. Get the camera's forward and right vectors
         Vector3 camForward = Camera.main.transform.forward;
         Vector3 camRight = Camera.main.transform.right;
 
-        // 2. Flatten them so the player doesn't move up/down
         camForward.y = 0;
         camRight.y = 0;
         camForward.Normalize();
         camRight.Normalize();
 
-        // 3. Create the movement direction relative to the camera
-        // moveInput.y is 'Vertical' (W/S), moveInput.x is 'Horizontal' (A/D)
         Vector3 relativeDirection = (camForward * moveInput.y) + (camRight * moveInput.x);
 
-        // 4. Apply movement
-        controller.Move(relativeDirection * moveSpeed * Time.deltaTime);
-
-        // 5. Rotate to face that relative direction
         if (relativeDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(relativeDirection);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
+
+        return relativeDirection * moveSpeed;
     }
 
+    private Vector3 CalculateVerticalMovement()
+    {
+        if (controller.isGrounded)
+        {
+            // Reset velocity but keep a small downward force to stay grounded
+            if (verticalVelocity < 0) verticalVelocity = -2f;
 
+            if (jumpRequested)
+            {
+                // Physics Formula: v = sqrt(h * -2 * g)
+                verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+        }
+        else
+        {
+            // Apply gravity over time
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+
+        // IMPORTANT: Reset the jump request so we don't "double jump" 
+        // if the grounded check stays true for two frames
+        jumpRequested = false;
+
+        return new Vector3(0, verticalVelocity, 0);
+    }
 }

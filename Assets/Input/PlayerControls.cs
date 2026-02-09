@@ -100,6 +100,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""2b774560-cc2c-454c-aeb2-aa50b1a4540b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -168,27 +177,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Jump"",
-            ""id"": ""6000f6de-7676-4590-96a6-4d335c7d1256"",
-            ""actions"": [
-                {
-                    ""name"": ""Jump"",
-                    ""type"": ""Button"",
-                    ""id"": ""bc17884c-41ce-49b5-bf23-3273e018f979"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
+                },
                 {
                     ""name"": """",
-                    ""id"": ""5e6d5fd3-9534-42b8-86f3-e47558b20005"",
+                    ""id"": ""c7d00271-9ba9-4788-95dc-77968ad6eb6a"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -199,7 +191,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""59cd7e75-699c-4cda-86b5-a2ec5b1eff37"",
+                    ""id"": ""831e223d-55d4-419f-adec-c49ca7d7d188"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -294,9 +286,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Move
         m_Move = asset.FindActionMap("Move", throwIfNotFound: true);
         m_Move_Move = m_Move.FindAction("Move", throwIfNotFound: true);
-        // Jump
-        m_Jump = asset.FindActionMap("Jump", throwIfNotFound: true);
-        m_Jump_Jump = m_Jump.FindAction("Jump", throwIfNotFound: true);
+        m_Move_Jump = m_Move.FindAction("Jump", throwIfNotFound: true);
         // Look
         m_Look = asset.FindActionMap("Look", throwIfNotFound: true);
         m_Look_Look = m_Look.FindAction("Look", throwIfNotFound: true);
@@ -308,7 +298,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Move.enabled, "This will cause a leak and performance issues, PlayerControls.Move.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_Jump.enabled, "This will cause a leak and performance issues, PlayerControls.Jump.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Look.enabled, "This will cause a leak and performance issues, PlayerControls.Look.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_LockOn.enabled, "This will cause a leak and performance issues, PlayerControls.LockOn.Disable() has not been called.");
     }
@@ -387,6 +376,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Move;
     private List<IMoveActions> m_MoveActionsCallbackInterfaces = new List<IMoveActions>();
     private readonly InputAction m_Move_Move;
+    private readonly InputAction m_Move_Jump;
     /// <summary>
     /// Provides access to input actions defined in input action map "Move".
     /// </summary>
@@ -402,6 +392,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Move/Move".
         /// </summary>
         public InputAction @Move => m_Wrapper.m_Move_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Move/Jump".
+        /// </summary>
+        public InputAction @Jump => m_Wrapper.m_Move_Jump;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -431,6 +425,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
         }
 
         /// <summary>
@@ -445,6 +442,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
         }
 
         /// <summary>
@@ -478,102 +478,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="MoveActions" /> instance referencing this action map.
     /// </summary>
     public MoveActions @Move => new MoveActions(this);
-
-    // Jump
-    private readonly InputActionMap m_Jump;
-    private List<IJumpActions> m_JumpActionsCallbackInterfaces = new List<IJumpActions>();
-    private readonly InputAction m_Jump_Jump;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "Jump".
-    /// </summary>
-    public struct JumpActions
-    {
-        private @PlayerControls m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public JumpActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "Jump/Jump".
-        /// </summary>
-        public InputAction @Jump => m_Wrapper.m_Jump_Jump;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_Jump; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="JumpActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(JumpActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="JumpActions" />
-        public void AddCallbacks(IJumpActions instance)
-        {
-            if (instance == null || m_Wrapper.m_JumpActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_JumpActionsCallbackInterfaces.Add(instance);
-            @Jump.started += instance.OnJump;
-            @Jump.performed += instance.OnJump;
-            @Jump.canceled += instance.OnJump;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="JumpActions" />
-        private void UnregisterCallbacks(IJumpActions instance)
-        {
-            @Jump.started -= instance.OnJump;
-            @Jump.performed -= instance.OnJump;
-            @Jump.canceled -= instance.OnJump;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="JumpActions.UnregisterCallbacks(IJumpActions)" />.
-        /// </summary>
-        /// <seealso cref="JumpActions.UnregisterCallbacks(IJumpActions)" />
-        public void RemoveCallbacks(IJumpActions instance)
-        {
-            if (m_Wrapper.m_JumpActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="JumpActions.AddCallbacks(IJumpActions)" />
-        /// <seealso cref="JumpActions.RemoveCallbacks(IJumpActions)" />
-        /// <seealso cref="JumpActions.UnregisterCallbacks(IJumpActions)" />
-        public void SetCallbacks(IJumpActions instance)
-        {
-            foreach (var item in m_Wrapper.m_JumpActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_JumpActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="JumpActions" /> instance referencing this action map.
-    /// </summary>
-    public JumpActions @Jump => new JumpActions(this);
 
     // Look
     private readonly InputActionMap m_Look;
@@ -780,14 +684,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Jump" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="JumpActions.AddCallbacks(IJumpActions)" />
-    /// <seealso cref="JumpActions.RemoveCallbacks(IJumpActions)" />
-    public interface IJumpActions
-    {
         /// <summary>
         /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
