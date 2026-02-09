@@ -14,6 +14,13 @@ public class PlayerController : MonoBehaviour
     private float verticalVelocity;
     private float gravity = -20f; // temp value. google search recommends heavy gravity for h&s games
 
+    void Start()
+    {
+        // Hide the mouse cursor and lock it to the center of the screen
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();

@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "name": "CharacterMovement",
+    "name": "PlayerControls",
     "maps": [
         {
             "name": "Move",
@@ -119,6 +119,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Look",
+            "id": "6a8137ef-fa95-4bda-9e8a-6a3fcebbee79",
+            "actions": [
+                {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "ceb8393c-2e69-4d3d-843d-7cf8895c2720",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ec01f321-2616-428e-8690-2642a3a9d2c3",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=75,y=50)",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7375102b-53dd-45c4-9ff1-27dd1306dfa1",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=2,y=2)",
+                    "groups": "",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
