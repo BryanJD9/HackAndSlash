@@ -162,45 +162,6 @@
                     "isPartOfComposite": false
                 }
             ]
-        },
-        {
-            "name": "LockOn",
-            "id": "1026f528-78ed-4b3d-84bc-b49fdb62a5de",
-            "actions": [
-                {
-                    "name": "LockOn",
-                    "type": "Button",
-                    "id": "20a0380b-902b-4b5f-bbdb-fb914048b37f",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "1b531692-d7b0-47ff-b28d-9001600fbbaa",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LockOn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "42a9d2b0-26b8-4da7-bd51-3153acf4a6bf",
-                    "path": "<Keyboard>/tab",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LockOn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
         }
     ],
     "controlSchemes": []
