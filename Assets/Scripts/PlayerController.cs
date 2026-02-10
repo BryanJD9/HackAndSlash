@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 8f;
     public float rotationSpeed = 720f;
     public float jumpHeight = 2f;
-    public float gravity = -30f; // Adjust gravity as needed if floaty
+    public float gravity = -30f; // Adjust gravity as needed if feels floaty
 
     private float verticalVelocity;
     private bool jumpRequested;
@@ -23,6 +23,10 @@ public class PlayerController : MonoBehaviour
     public LayerMask enemyLayer;
 
     private Transform currentTarget;
+
+    [Header("UI Settings")]
+    public GameObject reticlePrefab; // Assign prefab in inspector
+    private GameObject activeReticle;
 
     private void Awake()
     {
@@ -75,6 +79,8 @@ public class PlayerController : MonoBehaviour
                 ClearLockOn();
             }
         }
+
+        UpdateReticle(); // Add this call
 
         Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
         controller.Move(finalMovement * Time.deltaTime);
@@ -178,7 +184,35 @@ public class PlayerController : MonoBehaviour
             currentTarget = null;
         }
     }
-# endregion
+
+    private void UpdateReticle()
+    {
+        if (currentTarget != null)
+        {
+            // 1. Create the reticle if it doesn't exist
+            if (activeReticle == null)
+            {
+                activeReticle = Instantiate(reticlePrefab);
+            }
+
+            // 2. Position it at the enemy's "chest" or "head"
+            // We add an offset (e.g., 1 unit up) so it's not at their feet
+            activeReticle.transform.position = currentTarget.position + Vector3.up;
+
+            // 3. Make the reticle always face the camera (Billboard effect)
+            activeReticle.transform.LookAt(Camera.main.transform);
+        }
+        else
+        {
+            // 4. Destroy the reticle when lock-on is lost
+            if (activeReticle != null)
+            {
+                Destroy(activeReticle);
+            }
+        }
+    }
+
+    #endregion
 
 
 }
