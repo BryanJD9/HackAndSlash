@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +16,13 @@ public class PlayerController : MonoBehaviour
 
     private float verticalVelocity;
     private bool jumpRequested;
+
+    [Header("Lock-On Settings")]
+    public CinemachineTargetGroup targetGroup;
+    public float lockOnRange = 15f;
+    public LayerMask enemyLayer;
+
+    private Transform currentTarget;
 
     private void Awake()
     {
@@ -41,11 +49,34 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnLockOn(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            if (currentTarget == null)
+            {
+                AttemptLockOn();
+            }
+            else
+            {
+                ClearLockOn();
+            }
+        }
+    }
+
     private void Update()
     {
-        Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
+        // Auto-unlock if enemy is too far away
+        if (currentTarget != null)
+        {
+            float distance = Vector3.Distance(transform.position, currentTarget.position);
+            if (distance > lockOnRange + 2f) // Give a small buffer
+            {
+                ClearLockOn();
+            }
+        }
 
-        // calculates movement all at once: ensures isGrounded updates correctly for the next frame
+        Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
         controller.Move(finalMovement * Time.deltaTime);
     }
 
@@ -61,8 +92,22 @@ public class PlayerController : MonoBehaviour
 
         Vector3 relativeDirection = (camForward * moveInput.y) + (camRight * moveInput.x);
 
-        if (relativeDirection != Vector3.zero)
+        // --- LOCK-ON ROTATION LOGIC ---
+        if (currentTarget != null)
         {
+            // 1. Face the enemy while locked on
+            Vector3 dirToEnemy = currentTarget.position - transform.position;
+            dirToEnemy.y = 0; // Keep the player upright
+
+            if (dirToEnemy != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(dirToEnemy);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+        }
+        else if (relativeDirection != Vector3.zero)
+        {
+            // 2. Standard rotation (face movement direction) if NOT locked on
             Quaternion targetRotation = Quaternion.LookRotation(relativeDirection);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
@@ -95,4 +140,45 @@ public class PlayerController : MonoBehaviour
 
         return new Vector3(0, verticalVelocity, 0);
     }
+
+
+    #region LockOn Function
+
+    private void AttemptLockOn()
+    {
+        // 1. Find all enemies in range
+        Collider[] enemies = Physics.OverlapSphere(transform.position, lockOnRange, enemyLayer);
+
+        float closestDistance = Mathf.Infinity;
+        Transform bestTarget = null;
+
+        foreach (var enemy in enemies)
+        {
+            float dist = Vector3.Distance(transform.position, enemy.transform.position);
+            if (dist < closestDistance)
+            {
+                closestDistance = dist;
+                bestTarget = enemy.transform;
+            }
+        }
+
+        if (bestTarget != null)
+        {
+            currentTarget = bestTarget;
+            // 2. Add enemy to Cinemachine Target Group
+            targetGroup.AddMember(currentTarget, 1f, 2f);
+        }
+    }
+
+    private void ClearLockOn()
+    {
+        if (currentTarget != null)
+        {
+            targetGroup.RemoveMember(currentTarget);
+            currentTarget = null;
+        }
+    }
+# endregion
+
+
 }

@@ -109,6 +109,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LockOn"",
+                    ""type"": ""Button"",
+                    ""id"": ""85955311-4462-4b05-91ed-4321c8226555"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -199,6 +208,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e90d2822-37b4-4cc4-8b9f-54989967a1f9"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LockOn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9bf0d56d-6e48-4a82-98c9-30bc0529e5e2"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LockOn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -240,45 +271,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
-        },
-        {
-            ""name"": ""LockOn"",
-            ""id"": ""68b8b46d-adfc-440b-8bd6-ddfc2b898092"",
-            ""actions"": [
-                {
-                    ""name"": ""LockOn"",
-                    ""type"": ""Button"",
-                    ""id"": ""47d6811a-e50a-43da-bfd9-371bfd224085"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""7f8036c3-d5bb-4387-9ab7-050db864b712"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LockOn"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6ff12af6-0836-4fdf-915c-eb6b00cd0616"",
-                    ""path"": ""<Keyboard>/tab"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LockOn"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
         }
     ],
     ""controlSchemes"": []
@@ -287,19 +279,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Move = asset.FindActionMap("Move", throwIfNotFound: true);
         m_Move_Move = m_Move.FindAction("Move", throwIfNotFound: true);
         m_Move_Jump = m_Move.FindAction("Jump", throwIfNotFound: true);
+        m_Move_LockOn = m_Move.FindAction("LockOn", throwIfNotFound: true);
         // Look
         m_Look = asset.FindActionMap("Look", throwIfNotFound: true);
         m_Look_Look = m_Look.FindAction("Look", throwIfNotFound: true);
-        // LockOn
-        m_LockOn = asset.FindActionMap("LockOn", throwIfNotFound: true);
-        m_LockOn_LockOn = m_LockOn.FindAction("LockOn", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Move.enabled, "This will cause a leak and performance issues, PlayerControls.Move.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Look.enabled, "This will cause a leak and performance issues, PlayerControls.Look.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_LockOn.enabled, "This will cause a leak and performance issues, PlayerControls.LockOn.Disable() has not been called.");
     }
 
     /// <summary>
@@ -377,6 +366,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IMoveActions> m_MoveActionsCallbackInterfaces = new List<IMoveActions>();
     private readonly InputAction m_Move_Move;
     private readonly InputAction m_Move_Jump;
+    private readonly InputAction m_Move_LockOn;
     /// <summary>
     /// Provides access to input actions defined in input action map "Move".
     /// </summary>
@@ -396,6 +386,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Move/Jump".
         /// </summary>
         public InputAction @Jump => m_Wrapper.m_Move_Jump;
+        /// <summary>
+        /// Provides access to the underlying input action "Move/LockOn".
+        /// </summary>
+        public InputAction @LockOn => m_Wrapper.m_Move_LockOn;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -428,6 +422,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @LockOn.started += instance.OnLockOn;
+            @LockOn.performed += instance.OnLockOn;
+            @LockOn.canceled += instance.OnLockOn;
         }
 
         /// <summary>
@@ -445,6 +442,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @LockOn.started -= instance.OnLockOn;
+            @LockOn.performed -= instance.OnLockOn;
+            @LockOn.canceled -= instance.OnLockOn;
         }
 
         /// <summary>
@@ -574,102 +574,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="LookActions" /> instance referencing this action map.
     /// </summary>
     public LookActions @Look => new LookActions(this);
-
-    // LockOn
-    private readonly InputActionMap m_LockOn;
-    private List<ILockOnActions> m_LockOnActionsCallbackInterfaces = new List<ILockOnActions>();
-    private readonly InputAction m_LockOn_LockOn;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "LockOn".
-    /// </summary>
-    public struct LockOnActions
-    {
-        private @PlayerControls m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public LockOnActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "LockOn/LockOn".
-        /// </summary>
-        public InputAction @LockOn => m_Wrapper.m_LockOn_LockOn;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_LockOn; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="LockOnActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(LockOnActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="LockOnActions" />
-        public void AddCallbacks(ILockOnActions instance)
-        {
-            if (instance == null || m_Wrapper.m_LockOnActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_LockOnActionsCallbackInterfaces.Add(instance);
-            @LockOn.started += instance.OnLockOn;
-            @LockOn.performed += instance.OnLockOn;
-            @LockOn.canceled += instance.OnLockOn;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="LockOnActions" />
-        private void UnregisterCallbacks(ILockOnActions instance)
-        {
-            @LockOn.started -= instance.OnLockOn;
-            @LockOn.performed -= instance.OnLockOn;
-            @LockOn.canceled -= instance.OnLockOn;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="LockOnActions.UnregisterCallbacks(ILockOnActions)" />.
-        /// </summary>
-        /// <seealso cref="LockOnActions.UnregisterCallbacks(ILockOnActions)" />
-        public void RemoveCallbacks(ILockOnActions instance)
-        {
-            if (m_Wrapper.m_LockOnActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="LockOnActions.AddCallbacks(ILockOnActions)" />
-        /// <seealso cref="LockOnActions.RemoveCallbacks(ILockOnActions)" />
-        /// <seealso cref="LockOnActions.UnregisterCallbacks(ILockOnActions)" />
-        public void SetCallbacks(ILockOnActions instance)
-        {
-            foreach (var item in m_Wrapper.m_LockOnActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_LockOnActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="LockOnActions" /> instance referencing this action map.
-    /// </summary>
-    public LockOnActions @LockOn => new LockOnActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Move" which allows adding and removing callbacks.
     /// </summary>
@@ -691,6 +595,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnJump(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LockOn" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLockOn(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Look" which allows adding and removing callbacks.
@@ -706,20 +617,5 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "LockOn" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="LockOnActions.AddCallbacks(ILockOnActions)" />
-    /// <seealso cref="LockOnActions.RemoveCallbacks(ILockOnActions)" />
-    public interface ILockOnActions
-    {
-        /// <summary>
-        /// Method invoked when associated input action "LockOn" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLockOn(InputAction.CallbackContext context);
     }
 }
