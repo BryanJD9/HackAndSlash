@@ -14,6 +14,10 @@ public class PlayerController : MonoBehaviour
     private float currentHealth;
     public Slider healthSlider; // Drag slider element in inspector
 
+    [SerializeField] private float healthSmoothTime = 0.2f; // How fast the bar catches up
+    private float healthVelocity; // Required for SmoothDamp
+    private float visualHealth;   // The "fake" health that the slider actually shows
+
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
     public float rotationSpeed = 720f;
@@ -40,12 +44,12 @@ public class PlayerController : MonoBehaviour
 
         // Initialize Health
         currentHealth = maxHealth;
+        visualHealth = maxHealth; // Start the visual health at full too
 
-        // Initialize Slider
         if (healthSlider != null)
         {
             healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
+            healthSlider.value = maxHealth;
         }
 
     }
@@ -170,7 +174,10 @@ public class PlayerController : MonoBehaviour
     {
         if (healthSlider != null)
         {
-            healthSlider.value = currentHealth;
+            // SmoothDamp moves visualHealth towards currentHealth over healthSmoothTime
+            visualHealth = Mathf.SmoothDamp(visualHealth, currentHealth, ref healthVelocity, healthSmoothTime);
+
+            healthSlider.value = visualHealth;
         }
     }
 
