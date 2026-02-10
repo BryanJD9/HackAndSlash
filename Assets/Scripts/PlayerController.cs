@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 8f;
     public float rotationSpeed = 720f;
     public float jumpHeight = 2f;
-    public float gravity = -30f; // Snappier gravity
+    public float gravity = -30f; // Adjust gravity as needed if floaty
 
     private float verticalVelocity;
     private bool jumpRequested;
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputValue value)
     {
-        // We set the request to true here; we will handle the logic in Update
+        // request to true here. handle the logic in Update
         if (value.isPressed)
         {
             jumpRequested = true;
@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
 
-        // SINGLE MOVE CALL: This ensures isGrounded updates correctly for the next frame
+        // calculates movement all at once: ensures isGrounded updates correctly for the next frame
         controller.Move(finalMovement * Time.deltaTime);
     }
 
