@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     [Header("Lock-On Settings")]
     public CinemachineTargetGroup targetGroup;
     public float lockOnRange = 15f;
-    public LayerMask enemyLayer;
+    public LayerMask enemyLayer; // remember to assign in inspector
 
     private Transform currentTarget;
 
@@ -98,10 +98,10 @@ public class PlayerController : MonoBehaviour
 
         Vector3 relativeDirection = (camForward * moveInput.y) + (camRight * moveInput.x);
 
-        // --- LOCK-ON ROTATION LOGIC ---
+        // Rotate lock on ui element
         if (currentTarget != null)
         {
-            // 1. Face the enemy while locked on
+            // Face the enemy while locked on
             Vector3 dirToEnemy = currentTarget.position - transform.position;
             dirToEnemy.y = 0; // Keep the player upright
 
@@ -113,7 +113,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (relativeDirection != Vector3.zero)
         {
-            // 2. Standard rotation (face movement direction) if NOT locked on
+            // Standard rotation (face movement direction) if NOT locked on
             Quaternion targetRotation = Quaternion.LookRotation(relativeDirection);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
@@ -140,7 +140,7 @@ public class PlayerController : MonoBehaviour
             verticalVelocity += gravity * Time.deltaTime;
         }
 
-        // IMPORTANT: Reset the jump request so we don't "double jump" 
+        // Reset the jump request so we don't "double jump" 
         // if the grounded check stays true for two frames
         jumpRequested = false;
 
@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviour
 
     private void AttemptLockOn()
     {
-        // 1. Find all enemies in range
+        // Find all enemies in range
         Collider[] enemies = Physics.OverlapSphere(transform.position, lockOnRange, enemyLayer);
 
         float closestDistance = Mathf.Infinity;
@@ -171,7 +171,7 @@ public class PlayerController : MonoBehaviour
         if (bestTarget != null)
         {
             currentTarget = bestTarget;
-            // 2. Add enemy to Cinemachine Target Group
+            // Add enemy to Cinemachine Target Group
             targetGroup.AddMember(currentTarget, 1f, 2f);
         }
     }
@@ -189,16 +189,15 @@ public class PlayerController : MonoBehaviour
     {
         if (currentTarget != null)
         {
-            // 1. Ensure the UI is visible
             if (!reticleUI.gameObject.activeSelf)
                 reticleUI.gameObject.SetActive(true);
 
-            // 2. Convert 3D world position to 2D screen coordinates
+            // Convert 3D world position to 2D screen coordinates
             Vector3 worldPos = currentTarget.position + reticleOffset;
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 
-            // 3. Check if the enemy is actually in front of the camera
-            // (Prevents the UI from showing if the enemy is behind you)
+            // Check if the enemy is actually in front of the camera
+            // Prevents the UI from showing if the enemy is behind you
             if (screenPos.z > 0)
             {
                 reticleUI.position = screenPos;
@@ -210,7 +209,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // 4. Hide if no target
+            // Hide if no target
             if (reticleUI != null && reticleUI.gameObject.activeSelf)
             {
                 reticleUI.gameObject.SetActive(false);
