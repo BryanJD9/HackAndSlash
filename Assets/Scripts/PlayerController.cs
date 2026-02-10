@@ -1,12 +1,18 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
     private Vector2 moveInput;
+
+    [Header("Health Settings")]
+    public float maxHealth = 100f;
+    private float currentHealth;
+    public Slider healthSlider; // Drag slider element in inspector
 
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
@@ -31,6 +37,17 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+
+        // Initialize Health
+        currentHealth = maxHealth;
+
+        // Initialize Slider
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
+
     }
 
     void Start()
@@ -70,6 +87,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        UpdateHealthUI();
+
         // Auto-unlock if enemy is too far away
         if (currentTarget != null)
         {
@@ -145,6 +164,20 @@ public class PlayerController : MonoBehaviour
         jumpRequested = false;
 
         return new Vector3(0, verticalVelocity, 0);
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.value = currentHealth;
+        }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        currentHealth -= amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
     }
 
 
