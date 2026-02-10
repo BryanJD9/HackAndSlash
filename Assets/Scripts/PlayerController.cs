@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
     private Transform currentTarget;
 
     [Header("UI Settings")]
-    public GameObject reticlePrefab; // Assign prefab in inspector
-    private GameObject activeReticle;
+    public RectTransform reticleUI; // Drag the 'LockOnReticle' Image here
+    public Vector3 reticleOffset = Vector3.up;
 
     private void Awake()
     {
@@ -189,25 +189,31 @@ public class PlayerController : MonoBehaviour
     {
         if (currentTarget != null)
         {
-            // 1. Create the reticle if it doesn't exist
-            if (activeReticle == null)
+            // 1. Ensure the UI is visible
+            if (!reticleUI.gameObject.activeSelf)
+                reticleUI.gameObject.SetActive(true);
+
+            // 2. Convert 3D world position to 2D screen coordinates
+            Vector3 worldPos = currentTarget.position + reticleOffset;
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+            // 3. Check if the enemy is actually in front of the camera
+            // (Prevents the UI from showing if the enemy is behind you)
+            if (screenPos.z > 0)
             {
-                activeReticle = Instantiate(reticlePrefab);
+                reticleUI.position = screenPos;
             }
-
-            // 2. Position it at the enemy's "chest" or "head"
-            // We add an offset (e.g., 1 unit up) so it's not at their feet
-            activeReticle.transform.position = currentTarget.position + Vector3.up;
-
-            // 3. Make the reticle always face the camera (Billboard effect)
-            activeReticle.transform.LookAt(Camera.main.transform);
+            else
+            {
+                reticleUI.gameObject.SetActive(false);
+            }
         }
         else
         {
-            // 4. Destroy the reticle when lock-on is lost
-            if (activeReticle != null)
+            // 4. Hide if no target
+            if (reticleUI != null && reticleUI.gameObject.activeSelf)
             {
-                Destroy(activeReticle);
+                reticleUI.gameObject.SetActive(false);
             }
         }
     }
