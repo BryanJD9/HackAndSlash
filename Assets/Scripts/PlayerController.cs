@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,6 +14,15 @@ public class PlayerController : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
     public Slider healthSlider; // Drag slider element in inspector
+
+    [Header("Invulnerability")]
+    public float invulnerabilityDuration = 1.0f; // 1 second of safety
+    private bool isInvulnerable = false;
+    private float invulnerabilityTimer;
+    public float flickerSpeed = .05f;
+
+    [Header("Visuals")]
+    public GameObject playerModel; // assign character mesh/model here
 
     [SerializeField] private float healthSmoothTime = 0.2f; // How fast the bar catches up
     private float healthVelocity; // Required for SmoothDamp
@@ -183,13 +193,37 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        // Flag: if already invulnerable, ignore dmg
+        if (isInvulnerable) return;
+
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
+        StartCoroutine(TriggerInvulnerability());
 
         Debug.Log($"Player took {amount} damage. Current Health: {currentHealth}");
     }
 
+    private IEnumerator TriggerInvulnerability()
+    {
+        isInvulnerable = true;
+
+        float elapsed = 0;
+        while (elapsed < invulnerabilityDuration)
+        {
+            // Toggle model visibility to create a flicker effect
+            if (playerModel != null)
+                playerModel.SetActive(!playerModel.activeSelf);
+
+            yield return new WaitForSeconds(flickerSpeed);
+            elapsed += 0.1f;
+        }
+
+        // make sure model is visible when finished
+        if (playerModel != null) playerModel.SetActive(true);
+
+        isInvulnerable = false;
+    }
 
     #region LockOn Function
 
