@@ -1,8 +1,12 @@
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(CharacterController))]
 public class Enemy : MonoBehaviour
 {
+    // This event notifies the spawner when the enemy dies
+    public event Action OnEnemyDeath;
+
     [Header("Stats")]
     public float maxHealth = 50f;
     private float currentHealth;
@@ -67,6 +71,10 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        // Trigger the event before destroying the object
+        OnEnemyDeath?.Invoke();
         Destroy(gameObject);
     }
+
+
 }
