@@ -71,8 +71,15 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
-        // Trigger the event before destroying the object
         OnEnemyDeath?.Invoke();
+        
+        // Remembers to remove this enemy from Target Group before destroying
+        var targetGroup = FindFirstObjectByType<Unity.Cinemachine.CinemachineTargetGroup>();
+        if (targetGroup != null)
+        {
+            targetGroup.RemoveMember(transform);
+        }
+
         Destroy(gameObject);
     }
 

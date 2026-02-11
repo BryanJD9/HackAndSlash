@@ -291,8 +291,11 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(dir);
 
             // Add a "step forwards" so the player chases the enemy as they attack
-            controller.Move(transform.forward * stepForwardDistance);
+            //controller.Move(transform.forward * stepForwardDistance);
         }
+
+        // Always move forwards with an attack. free aim needs movement too.
+        controller.Move(transform.forward * stepForwardDistance);
 
         //Debug.Log("Attacking.");
     }
@@ -349,12 +352,12 @@ public class PlayerController : MonoBehaviour
 
             if (screenPos.z > 0)
             {
-                // --- THE JITTER FIX ---
-                // If this is a brand new target, don't Lerp. Just snap there instantly.
+                // - LockOn reticle jitter fix -
+                // If a brand new target, don't Lerp. Just snap instantly.
                 if (currentTarget != lastTarget)
                 {
                     reticleUI.position = screenPos;
-                    lastTarget = currentTarget; // Update the reference
+                    lastTarget = currentTarget;
                 }
                 else
                 {
@@ -379,7 +382,7 @@ public class PlayerController : MonoBehaviour
 
     private void AttemptTargetSwap(bool lookRight)
     {
-        // 1. Find all potential enemies
+        // Find all potential enemies
         Collider[] enemies = Physics.OverlapSphere(transform.position, lockOnRange, enemyLayer);
 
         Transform bestTarget = null;
@@ -389,15 +392,14 @@ public class PlayerController : MonoBehaviour
         {
             if (enemy.transform == currentTarget) continue;
 
-            // 2. Calculate direction to this potential enemy relative to the camera
+            // Calculate direction to this potential enemy relative to the camera
             Vector3 camRight = Camera.main.transform.right;
             Vector3 dirToEnemy = (enemy.transform.position - transform.position).normalized;
 
-            // 3. Check if the enemy is to the left or right of our current target
+            // Check if the enemy is to the left or right of our current target
             Vector3 dirToCurrent = (currentTarget.position - transform.position).normalized;
             float angle = Vector3.SignedAngle(dirToCurrent, dirToEnemy, Vector3.up);
 
-            // If we want to look right, angle must be positive. If left, negative.
             if ((lookRight && angle > 10) || (!lookRight && angle < -10))
             {
                 if (Mathf.Abs(angle) < closestAngle)
@@ -408,7 +410,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 4. Switch if we found a valid candidate
+        // Switch if we found a valid target
         if (bestTarget != null)
         {
             ClearLockOn();
@@ -420,7 +422,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SwapCooldown()
     {
         canSwap = false;
-        yield return new WaitForSeconds(0.25f); // Short delay between swaps
+        yield return new WaitForSeconds(0.25f);
         canSwap = true;
     }
 
