@@ -48,8 +48,12 @@ public class PlayerController : MonoBehaviour
     public CinemachineTargetGroup targetGroup;
     public float lockOnRange = 15f;
     public LayerMask enemyLayer; // remember to assign in inspector
-
     private Transform currentTarget;
+
+    [Header("Lock-On Swapping")]
+    public float swapThreshold = 0.5f; // How far you must flick to swap
+    private bool canSwap = true; // Prevent rapid flickering between targets
+    private Transform lastTarget; // Track who we were looking at last frame
 
     [Header("UI Settings")]
     public RectTransform reticleUI; // Drag the 'LockOnReticle' Image here
@@ -77,6 +81,7 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
     }
 
+    #region InputSystem
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
@@ -106,6 +111,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnSwitchTarget(InputValue value)
+    {
+        if (currentTarget == null) return;
+
+        Vector2 input = value.Get<Vector2>();
+
+        // Only swap if the input is strong enough (a "flick")
+        if (canSwap && input.magnitude > swapThreshold)
+        {
+            // Determine if swapping Left or Right
+            bool lookRight = input.x > 0;
+            AttemptTargetSwap(lookRight);
+
+            // Start cooldown so we don't swap 60 times per second
+            StartCoroutine(SwapCooldown());
+        }
+    }
+
+    #endregion
+
     private void Update()
     {
         UpdateHealthUI();
@@ -126,6 +151,7 @@ public class PlayerController : MonoBehaviour
         controller.Move(finalMovement * Time.deltaTime);
     }
 
+    #region PlayerMovement
     private Vector3 CalculateHorizontalMovement()
     {
         Vector3 camForward = Camera.main.transform.forward;
@@ -187,6 +213,9 @@ public class PlayerController : MonoBehaviour
         return new Vector3(0, verticalVelocity, 0);
     }
 
+    #endregion
+
+    #region HealthFunctions
     private void UpdateHealthUI()
     {
         if (healthSlider != null)
@@ -232,6 +261,9 @@ public class PlayerController : MonoBehaviour
         isInvulnerable = false;
     }
 
+    #endregion
+
+    #region AttackingLogic
     public void OnAttack(InputValue value)
     {
         if (value.isPressed && Time.time >= lastAttackTime + attackCooldown)
@@ -264,6 +296,9 @@ public class PlayerController : MonoBehaviour
 
         //Debug.Log("Attacking.");
     }
+
+    #endregion
+
 
     #region LockOn Function
 
@@ -309,15 +344,23 @@ public class PlayerController : MonoBehaviour
             if (!reticleUI.gameObject.activeSelf)
                 reticleUI.gameObject.SetActive(true);
 
-            // Convert 3D world position to 2D screen coordinates
             Vector3 worldPos = currentTarget.position + reticleOffset;
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 
-            // Check if the enemy is actually in front of the camera
-            // Prevents the UI from showing if the enemy is behind you
             if (screenPos.z > 0)
             {
-                reticleUI.position = screenPos;
+                // --- THE JITTER FIX ---
+                // If this is a brand new target, don't Lerp. Just snap there instantly.
+                if (currentTarget != lastTarget)
+                {
+                    reticleUI.position = screenPos;
+                    lastTarget = currentTarget; // Update the reference
+                }
+                else
+                {
+                    // Smoothly follow the target if it's the same one
+                    reticleUI.position = Vector3.Lerp(reticleUI.position, screenPos, Time.deltaTime * 20f);
+                }
             }
             else
             {
@@ -326,15 +369,65 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Hide if no target
             if (reticleUI != null && reticleUI.gameObject.activeSelf)
             {
                 reticleUI.gameObject.SetActive(false);
+                lastTarget = null; // Reset when lock-on is cleared
             }
         }
     }
 
+    private void AttemptTargetSwap(bool lookRight)
+    {
+        // 1. Find all potential enemies
+        Collider[] enemies = Physics.OverlapSphere(transform.position, lockOnRange, enemyLayer);
+
+        Transform bestTarget = null;
+        float closestAngle = Mathf.Infinity;
+
+        foreach (var enemy in enemies)
+        {
+            if (enemy.transform == currentTarget) continue;
+
+            // 2. Calculate direction to this potential enemy relative to the camera
+            Vector3 camRight = Camera.main.transform.right;
+            Vector3 dirToEnemy = (enemy.transform.position - transform.position).normalized;
+
+            // 3. Check if the enemy is to the left or right of our current target
+            Vector3 dirToCurrent = (currentTarget.position - transform.position).normalized;
+            float angle = Vector3.SignedAngle(dirToCurrent, dirToEnemy, Vector3.up);
+
+            // If we want to look right, angle must be positive. If left, negative.
+            if ((lookRight && angle > 10) || (!lookRight && angle < -10))
+            {
+                if (Mathf.Abs(angle) < closestAngle)
+                {
+                    closestAngle = Mathf.Abs(angle);
+                    bestTarget = enemy.transform;
+                }
+            }
+        }
+
+        // 4. Switch if we found a valid candidate
+        if (bestTarget != null)
+        {
+            ClearLockOn();
+            currentTarget = bestTarget;
+            targetGroup.AddMember(currentTarget, 1f, 2f);
+        }
+    }
+
+    private IEnumerator SwapCooldown()
+    {
+        canSwap = false;
+        yield return new WaitForSeconds(0.25f); // Short delay between swaps
+        canSwap = true;
+    }
+
     #endregion
+
+
+
 
 
 }
