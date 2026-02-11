@@ -3,7 +3,7 @@
     "name": "PlayerControls",
     "maps": [
         {
-            "name": "Move",
+            "name": "PlayerActions",
             "id": "069cff0d-9253-4543-8993-e5250cdc21a9",
             "actions": [
                 {
@@ -28,6 +28,15 @@
                     "name": "LockOn",
                     "type": "Button",
                     "id": "85955311-4462-4b05-91ed-4321c8226555",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "dfae34b6-c2c5-4e3d-a37e-f20f9bf536da",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -142,6 +151,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c6f8a69a-327c-4437-8493-dd612edc6574",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d7ac52e-5572-4a61-b282-01d40429264e",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

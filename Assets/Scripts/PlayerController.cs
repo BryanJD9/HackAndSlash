@@ -37,6 +37,13 @@ public class PlayerController : MonoBehaviour
     private float verticalVelocity;
     private bool jumpRequested;
 
+    [Header("Attack Settings")]
+    public GameObject hitboxPrefab;
+    public Transform attackPoint; // Create an empty child on the player as the spawn point
+    public float attackCooldown = 0.5f;
+    private float lastAttackTime;
+    public float stepForwardDistance = .5f;
+
     [Header("Lock-On Settings")]
     public CinemachineTargetGroup targetGroup;
     public float lockOnRange = 15f;
@@ -223,6 +230,39 @@ public class PlayerController : MonoBehaviour
         if (playerModel != null) playerModel.SetActive(true);
 
         isInvulnerable = false;
+    }
+
+    public void OnAttack(InputValue value)
+    {
+        if (value.isPressed && Time.time >= lastAttackTime + attackCooldown)
+        {
+            PerformAttack();
+        }
+    }
+
+    private void PerformAttack()
+    {
+        lastAttackTime = Time.time;
+
+        // Spawn the hitbox at the attackPoint's position and rotation
+        // remember to make an empty child that has a point in front of player
+        GameObject hitbox = Instantiate(hitboxPrefab, attackPoint.position, attackPoint.rotation);
+
+        // Parent it to the player so hitbox moves with the player
+        hitbox.transform.SetParent(transform);
+
+        if (currentTarget != null)
+        {
+            // Turn to face the enemy instantly when swinging
+            Vector3 dir = currentTarget.position - transform.position;
+            dir.y = 0;
+            transform.rotation = Quaternion.LookRotation(dir);
+
+            // Add a "step forwards" so the player chases the enemy as they attack
+            controller.Move(transform.forward * stepForwardDistance);
+        }
+
+        //Debug.Log("Attacking.");
     }
 
     #region LockOn Function
