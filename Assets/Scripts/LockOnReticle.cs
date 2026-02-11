@@ -11,7 +11,8 @@ public class LockOnReticle : MonoBehaviour
         // Rotate the reticle
         transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
 
-        // Simple pulsing scale effect
+        // pulsing effect
+
         //float scale = 1f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmount;
         //transform.localScale = new Vector3(scale, scale, 1f);
     }

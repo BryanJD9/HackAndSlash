@@ -10,26 +10,26 @@ public class HazardZone : MonoBehaviour
     // Track players currently inside the zone
     private Dictionary<Collider, Coroutine> activeDamageRoutines = new Dictionary<Collider, Coroutine>();
 
-    private void OnTriggerEnter(Collider foreignCollider)
+    private void OnTriggerEnter(Collider damageReceiver)
     {
         // Check if the object that entered has a PlayerController
-        PlayerController player = foreignCollider.GetComponent<PlayerController>();
+        PlayerController player = damageReceiver.GetComponent<PlayerController>();
 
-        if (player != null && !activeDamageRoutines.ContainsKey(foreignCollider))
+        if (player != null && !activeDamageRoutines.ContainsKey(damageReceiver))
         {
             // Start the repeating damage "clock"
             Coroutine routine = StartCoroutine(ApplyPeriodicDamage(player));
-            activeDamageRoutines.Add(foreignCollider, routine);
+            activeDamageRoutines.Add(damageReceiver, routine);
         }
     }
 
-    private void OnTriggerExit(Collider foreignCollider)
+    private void OnTriggerExit(Collider damageReceiver)
     {
-        if (activeDamageRoutines.ContainsKey(foreignCollider))
+        if (activeDamageRoutines.ContainsKey(damageReceiver))
         {
             // Stop the damage clock when they leave
-            StopCoroutine(activeDamageRoutines[foreignCollider]);
-            activeDamageRoutines.Remove(foreignCollider);
+            StopCoroutine(activeDamageRoutines[damageReceiver]);
+            activeDamageRoutines.Remove(damageReceiver);
         }
     }
 
