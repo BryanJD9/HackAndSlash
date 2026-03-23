@@ -1186,6 +1186,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 905177463}
   m_CullTransparentMesh: 1
+--- !u!1 &937334470 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 087b70e349841e64ea1d0a5169603689, type: 3}
+  m_PrefabInstance: {fileID: 1789085754}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &937334471 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 087b70e349841e64ea1d0a5169603689, type: 3}
@@ -1322,11 +1327,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5966f457f1584964ea4c41e9fc0349b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  animator: {fileID: 0}
   maxHealth: 100
   healthSlider: {fileID: 520438835}
   invulnerabilityDuration: 1.5
   flickerSpeed: 0.3
-  playerModel: {fileID: 1512693751}
+  playerModel: {fileID: 937334470}
   healthSmoothTime: 0.2
   moveSpeed: 8
   rotationSpeed: 720
