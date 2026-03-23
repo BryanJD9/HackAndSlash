@@ -10,6 +10,10 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector2 moveInput;
 
+    // ADD ANIMATOR REFERENCE
+    [Header("Animation")]
+    public Animator animator;
+
     [Header("Health Settings")]
     public float maxHealth = 100f;
     private float currentHealth;
@@ -72,6 +76,9 @@ public class PlayerController : MonoBehaviour
             healthSlider.maxValue = maxHealth;
             healthSlider.value = maxHealth;
         }
+
+        // FIND THE ANIMATOR ON THE CHILD OBJECT
+        animator = GetComponentInChildren<Animator>();
 
     }
 
@@ -149,6 +156,22 @@ public class PlayerController : MonoBehaviour
 
         Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
         controller.Move(finalMovement * Time.deltaTime);
+
+        // UPDATE THE ANIMATIONS
+        UpdateAnimations();
+
+    }
+
+    private void UpdateAnimations()
+    {
+        if (animator != null)
+        {
+            // moveInput.magnitude goes from 0 (still) to 1 (full stick/key press)
+            float currentSpeed = moveInput.magnitude;
+
+            // We use 'dampTime' (0.1f) to smooth the transition so it doesn't snap instantly
+            animator.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
+        }
     }
 
     #region PlayerMovement
