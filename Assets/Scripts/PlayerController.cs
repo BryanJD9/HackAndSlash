@@ -166,11 +166,22 @@ public class PlayerController : MonoBehaviour
     {
         if (animator != null)
         {
-            // moveInput.magnitude goes from 0 (still) to 1 (full stick/key press)
-            float currentSpeed = moveInput.magnitude;
+            // 1. Get the character's actual physical movement velocity
+            Vector3 currentVelocity = controller.velocity;
+            currentVelocity.y = 0; // Ignore jumping/falling speed
 
-            // We use 'dampTime' (0.1f) to smooth the transition so it doesn't snap instantly
-            animator.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
+            // 2. Convert World Velocity to Local Velocity
+            // This translates "Moving East" into "Moving Right" based on where the character is looking
+            Vector3 localVelocity = transform.InverseTransformDirection(currentVelocity);
+
+            // 3. Normalize the values to fit our Blend Tree (-1 to 1)
+            // We divide by moveSpeed so running at max speed equals exactly 1 or -1
+            float animX = localVelocity.x / moveSpeed;
+            float animZ = localVelocity.z / moveSpeed;
+
+            // 4. Send to Animator with a slight dampening for smoothness
+            animator.SetFloat("VelocityX", animX, 0.1f, Time.deltaTime);
+            animator.SetFloat("VelocityZ", animZ, 0.1f, Time.deltaTime);
         }
     }
 
