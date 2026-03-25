@@ -1210,6 +1210,7 @@ GameObject:
   - component: {fileID: 1001958352}
   - component: {fileID: 1001958358}
   - component: {fileID: 1001958357}
+  - component: {fileID: 1001958360}
   - component: {fileID: 1001958359}
   m_Layer: 0
   m_Name: Player
@@ -1338,10 +1339,6 @@ MonoBehaviour:
   rotationSpeed: 720
   jumpHeight: 2
   gravity: -40
-  hitboxPrefab: {fileID: 1731590348819984694, guid: a99cebdd54177b043a7f5c0bc41f4f44, type: 3}
-  attackPoint: {fileID: 723459423}
-  attackCooldown: 0.25
-  stepForwardDistance: 2
   targetGroup: {fileID: 859137100}
   lockOnRange: 15
   enemyLayer:
@@ -1405,6 +1402,20 @@ MonoBehaviour:
   m_DefaultActionMap: PlayerActions
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1001958360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001958351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0e5db1f905c0054ab6f3bcc4c9cd62c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  animator: {fileID: 0}
+  comboResetTime: 1.5
 --- !u!1 &1084080552
 GameObject:
   m_ObjectHideFlags: 0
