@@ -6,8 +6,8 @@ public class PlayerCombat : MonoBehaviour
     public Animator animator;
 
     [Header("Combo Settings")]
-    public float comboResetTime = 1.5f;
-    public float attackCooldown = 0.4f; // ADD THIS: Minimum time between clicks
+    public float comboResetTime = 1.1f;
+    public float attackCooldown = 0.4f;
 
     private float lastAttackTime;
     private int comboStep = 0;
@@ -17,6 +17,9 @@ public class PlayerCombat : MonoBehaviour
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
     }
+
+    // NEW: This tells the PlayerController if we are busy swinging
+    public bool isAttacking { get; private set; }
 
     public void OnAttack(InputValue value)
     {
@@ -28,25 +31,23 @@ public class PlayerCombat : MonoBehaviour
 
     private void PerformAttack()
     {
-        // ADD THIS: Ignore the click if we pressed it too soon after the last swing
-        if (Time.time - lastAttackTime < attackCooldown)
-        {
-            return; // Exit the function completely
-        }
+        if (Time.time - lastAttackTime < attackCooldown) return;
 
-        // If too much time has passed, reset the combo
-        if (Time.time - lastAttackTime > comboResetTime)
-        {
-            comboStep = 0;
-        }
+        if (Time.time - lastAttackTime > comboResetTime) comboStep = 0;
 
         lastAttackTime = Time.time;
         comboStep++;
-        animator.SetTrigger("Attack");
 
-        if (comboStep >= 3)
-        {
-            comboStep = 0;
-        }
+        // Start the attack
+        animator.SetTrigger("Attack");
+        isAttacking = true;
+
+        if (comboStep >= 3) comboStep = 0;
+    }
+
+    // NEW: We will call this from the Animator to "unlock" movement
+    public void FinishAttack()
+    {
+        isAttacking = false;
     }
 }

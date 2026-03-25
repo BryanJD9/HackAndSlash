@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector2 moveInput;
 
+    private PlayerCombat combat;
+
     // ADD ANIMATOR REFERENCE
     [Header("Animation")]
     public Animator animator;
@@ -66,6 +68,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        combat = GetComponent<PlayerCombat>();
 
         // Initialize Health
         currentHealth = maxHealth;
@@ -154,8 +157,27 @@ public class PlayerController : MonoBehaviour
 
         UpdateReticle(); // Add this call
 
-        Vector3 finalMovement = CalculateHorizontalMovement() + CalculateVerticalMovement();
+        // --- MODIFIED MOVEMENT BLOCK ---
+        Vector3 finalMovement = Vector3.zero;
+
+        // We still apply gravity every frame (so you don't float if you attack mid-air)
+        Vector3 verticalMove = CalculateVerticalMovement();
+
+        // ONLY calculate horizontal movement and rotation if we ARE NOT attacking
+        if (combat != null && !combat.isAttacking)
+        {
+            Vector3 horizontalMove = CalculateHorizontalMovement();
+            finalMovement = horizontalMove + verticalMove;
+        }
+        else
+        {
+            // If attacking, only apply gravity/vertical force
+            finalMovement = verticalMove;
+        }
+
         controller.Move(finalMovement * Time.deltaTime);
+        // -------------------------------
+
 
         // UPDATE THE ANIMATIONS
         UpdateAnimations();
@@ -188,6 +210,9 @@ public class PlayerController : MonoBehaviour
     #region PlayerMovement
     private Vector3 CalculateHorizontalMovement()
     {
+        // Double check here: if attacking, don't calculate any direction
+        if (combat != null && combat.isAttacking) return Vector3.zero;
+
         Vector3 camForward = Camera.main.transform.forward;
         Vector3 camRight = Camera.main.transform.right;
 
@@ -198,12 +223,10 @@ public class PlayerController : MonoBehaviour
 
         Vector3 relativeDirection = (camForward * moveInput.y) + (camRight * moveInput.x);
 
-        // Rotate lock on ui element
         if (currentTarget != null)
         {
-            // Face the enemy while locked on
             Vector3 dirToEnemy = currentTarget.position - transform.position;
-            dirToEnemy.y = 0; // Keep the player upright
+            dirToEnemy.y = 0;
 
             if (dirToEnemy != Vector3.zero)
             {
@@ -213,7 +236,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (relativeDirection != Vector3.zero)
         {
-            // Standard rotation (face movement direction) if NOT locked on
             Quaternion targetRotation = Quaternion.LookRotation(relativeDirection);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
