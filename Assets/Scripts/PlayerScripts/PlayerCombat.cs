@@ -18,6 +18,16 @@ public class PlayerCombat : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
     }
 
+    private void Update()
+    {
+        // Fail-safe: If the combo timer expires, force-unlock movement
+        if (isAttacking && Time.time - lastAttackTime > comboResetTime)
+        {
+            isAttacking = false;
+            comboStep = 0;
+        }
+    }
+
     // NEW: This tells the PlayerController if we are busy swinging
     public bool isAttacking { get; private set; }
 
@@ -36,18 +46,25 @@ public class PlayerCombat : MonoBehaviour
         if (Time.time - lastAttackTime > comboResetTime) comboStep = 0;
 
         lastAttackTime = Time.time;
-        comboStep++;
+        comboStep++; // If this becomes 1, we are doing Attack 1
 
-        // Start the attack
         animator.SetTrigger("Attack");
         isAttacking = true;
 
-        if (comboStep >= 3) comboStep = 0;
+        if (comboStep > 3) comboStep = 1;
     }
 
-    // NEW: We will call this from the Animator to "unlock" movement
-    public void FinishAttack()
+    // Update this to accept the 'int' from the Animation Event
+    public void FinishAttack(int attackIndex)
     {
-        isAttacking = false;
+        // Only unlock if the event matches the swing we are currently on!
+        // This ignores the 'leftover' events from previous swings.
+        if (attackIndex == comboStep)
+        {
+            isAttacking = false;
+            // Debug.Log($"Legit unlock from Attack {attackIndex}");
+        }
     }
+
+
 }

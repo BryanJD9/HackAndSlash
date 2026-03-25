@@ -164,17 +164,19 @@ public class PlayerController : MonoBehaviour
         Vector3 verticalMove = CalculateVerticalMovement();
 
         // ONLY calculate horizontal movement and rotation if we ARE NOT attacking
-        if (combat != null && !combat.isAttacking)
+        // CHECK THE LOCK HERE
+        if (combat != null && combat.isAttacking)
         {
-            Vector3 horizontalMove = CalculateHorizontalMovement();
-            finalMovement = horizontalMove + verticalMove;
+            // If attacking, horizontal movement is ZERO
+            finalMovement = verticalMove;
         }
         else
         {
-            // If attacking, only apply gravity/vertical force
-            finalMovement = verticalMove;
+            // If NOT attacking, calculate normal movement
+            finalMovement = CalculateHorizontalMovement() + verticalMove;
         }
 
+        // Apply the movement
         controller.Move(finalMovement * Time.deltaTime);
         // -------------------------------
 
