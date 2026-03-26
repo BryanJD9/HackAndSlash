@@ -1430,6 +1430,8 @@ MonoBehaviour:
   animator: {fileID: 0}
   comboResetTime: 1.5
   attackCooldown: 0.4
+  baseDamage: 20
+  sword: {fileID: 1957436762}
 --- !u!1 &1084080552
 GameObject:
   m_ObjectHideFlags: 0
@@ -2913,7 +2915,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.05
+  m_Radius: 0.2
   m_Height: 2.5
   m_Direction: 2
   m_Center: {x: 0.0039062388, y: -0.00000012792958, z: -0.33}
@@ -2930,6 +2932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwordHitbox
   damage: 20
+  alreadyHit: []
 --- !u!1 &2027365329
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class SwordHitbox : MonoBehaviour
 {
+    [HideInInspector]
     public float damage = 20f;
+
     private bool isSensing = false;
 
     // This list keeps track of who we already hit in ONE swing

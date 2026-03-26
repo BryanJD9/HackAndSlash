@@ -12,6 +12,11 @@ public class PlayerCombat : MonoBehaviour
     private float lastAttackTime;
     private int comboStep = 0;
 
+    [Header("Damage Settings")]
+    public float baseDamage = 20f;
+    public SwordHitbox sword; // Drag your Sword object here
+
+
     private void Start()
     {
         if (animator == null)
@@ -47,6 +52,13 @@ public class PlayerCombat : MonoBehaviour
 
         lastAttackTime = Time.time;
         comboStep++; // If this becomes 1, we are doing Attack 1
+
+        // CALCULATE DAMAGE: 
+        // Step 1 = 20, Step 2 = 30, Step 3 = 40
+        if (sword != null)
+        {
+            sword.damage = baseDamage + ((comboStep - 1) * 10f);
+        }
 
         animator.SetTrigger("Attack");
         isAttacking = true;
