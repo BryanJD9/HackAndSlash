@@ -1432,6 +1432,7 @@ MonoBehaviour:
   attackCooldown: 0.4
   baseDamage: 20
   sword: {fileID: 1957436762}
+  finisherCooldown: 2
 --- !u!1 &1084080552
 GameObject:
   m_ObjectHideFlags: 0
@@ -2515,6 +2516,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 2ecdbd3dd7621a945a8cc375decf96d0, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 087b70e349841e64ea1d0a5169603689, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

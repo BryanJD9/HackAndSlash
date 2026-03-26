@@ -99,11 +99,25 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputValue value)
     {
-        // request to true here. handle the logic in Update
-        if (value.isPressed)
+        // Don't jump if we are currently locked in an attack animation
+        if (combat.isAttacking) return;
+
+        if (value.isPressed && controller.isGrounded)
         {
-            jumpRequested = true;
+            if (value.isPressed && controller.isGrounded)
+            {
+                // 1. Logic for the physical jump (Velocity/Physics)
+                verticalVelocity = jumpHeight;
+
+                // 2. Tell the Animator to play the clip
+                animator.SetTrigger("Jump");
+
+                // 3. Optional: If you want to prevent attacking mid-air
+                // isJumping = true; 
+            }
         }
+
+        
     }
 
     public void OnLockOn(InputValue value)
@@ -270,6 +284,7 @@ public class PlayerController : MonoBehaviour
 
         return new Vector3(0, verticalVelocity, 0);
     }
+    
 
     #endregion
 
