@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,6 +17,9 @@ public class PlayerCombat : MonoBehaviour
     public float baseDamage = 20f;
     public SwordHitbox sword; // Drag your Sword object here
 
+    [Header("Finisher Settings")]
+    public float finisherCooldown = 2.0f; // Long delay after hit 3
+    private bool isFinisherRecovery = false;
 
     private void Start()
     {
@@ -46,15 +50,22 @@ public class PlayerCombat : MonoBehaviour
 
     private void PerformAttack()
     {
-        if (Time.time - lastAttackTime < attackCooldown) return;
+        // 1. If we are still recovering from the big 3rd hit, stop here
+        if (isFinisherRecovery) return;
+
+        if (isAttacking && Time.time - lastAttackTime < attackCooldown) return;
 
         if (Time.time - lastAttackTime > comboResetTime) comboStep = 0;
 
         lastAttackTime = Time.time;
-        comboStep++; // If this becomes 1, we are doing Attack 1
+        comboStep++;
 
-        // CALCULATE DAMAGE: 
-        // Step 1 = 20, Step 2 = 30, Step 3 = 40
+        // 2. Logic for when we hit the end of the combo
+        if (comboStep > 3)
+        {
+            comboStep = 1; // Prepare for next time
+        }
+
         if (sword != null)
         {
             sword.damage = baseDamage + ((comboStep - 1) * 10f);
@@ -63,7 +74,11 @@ public class PlayerCombat : MonoBehaviour
         animator.SetTrigger("Attack");
         isAttacking = true;
 
-        if (comboStep > 3) comboStep = 1;
+        // 3. If this WAS the 3rd hit, start the "Recovery" cooldown
+        if (comboStep == 3)
+        {
+            StartCoroutine(FinisherCooldownRoutine());
+        }
     }
 
     // Update this to accept the 'int' from the Animation Event
@@ -76,6 +91,17 @@ public class PlayerCombat : MonoBehaviour
             isAttacking = false;
             // Debug.Log($"Legit unlock from Attack {attackIndex}");
         }
+    }
+
+    private IEnumerator FinisherCooldownRoutine()
+    {
+        isFinisherRecovery = true;
+
+        // Wait for the duration of the extra cooldown
+        yield return new WaitForSeconds(finisherCooldown);
+
+        isFinisherRecovery = false;
+        comboStep = 0; // Reset to hit 1 after the long break
     }
 
 

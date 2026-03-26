@@ -55,13 +55,6 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.92060083
-        functionName: FinishAttack
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 1
-        messageOptions: 0
       - time: 0.32957748
         functionName: StartSensing
         data: 
@@ -71,6 +64,13 @@ ModelImporter:
         messageOptions: 0
       - time: 0.83098596
         functionName: StopSensing
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.860515
+        functionName: FinishAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
