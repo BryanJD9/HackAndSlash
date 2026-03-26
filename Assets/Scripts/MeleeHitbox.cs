@@ -21,7 +21,7 @@ public class MeleeHitbox : MonoBehaviour
             // Calculate direction from the player to the enemy
             Vector3 knockbackDir = other.transform.position - transform.position;
 
-            enemy.TakeDamage(damage, knockbackDir, knockbackStrength);
+            //enemy.TakeDamage(damage, knockbackDir, knockbackStrength);
         }
     }
 }

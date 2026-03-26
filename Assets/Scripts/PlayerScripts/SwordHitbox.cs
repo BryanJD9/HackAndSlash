@@ -7,19 +7,19 @@ public class SwordHitbox : MonoBehaviour
     private bool isSensing = false;
 
     // This list keeps track of who we already hit in ONE swing
-    private List<GameObject> alreadyHit = new List<GameObject>();
+    public List<GameObject> alreadyHit = new List<GameObject>();
 
     // Called by the Animator/Relay to start looking for hits
     public void StartSensing()
     {
+        alreadyHit.Clear(); // Force clear at the start
         isSensing = true;
-        alreadyHit.Clear(); // Clear the list for the new swing
     }
 
-    // Called by the Animator/Relay to stop looking
     public void StopSensing()
     {
         isSensing = false;
+        alreadyHit.Clear(); // Force clear at the end as well
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,6 +39,7 @@ public class SwordHitbox : MonoBehaviour
             }
         }
     }
+
 
 
 

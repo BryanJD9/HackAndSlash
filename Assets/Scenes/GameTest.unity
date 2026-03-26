@@ -1208,6 +1208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 116e2f5da80a1b448b058b55bd7ba6cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationRelay
+  sword: {fileID: 1957436762}
 --- !u!1 &1001958351
 GameObject:
   m_ObjectHideFlags: 0
@@ -2819,7 +2820,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100002, guid: da22ed8a6137a754aa19d2a811a843ba, type: 3}
       propertyPath: m_Name
-      value: SlothSword_StemCell
+      value: Sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: da22ed8a6137a754aa19d2a811a843ba, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: da22ed8a6137a754aa19d2a811a843ba, type: 3}
       propertyPath: m_LocalScale.x
@@ -2880,6 +2885,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100002, guid: da22ed8a6137a754aa19d2a811a843ba, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1957436761}
+    - targetCorrespondingSourceObject: {fileID: 100002, guid: da22ed8a6137a754aa19d2a811a843ba, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1957436762}
   m_SourcePrefab: {fileID: 100100000, guid: da22ed8a6137a754aa19d2a811a843ba, type: 3}
 --- !u!4 &1957436758 stripped
 Transform:
@@ -2906,9 +2914,22 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.05
-  m_Height: 1.5458704
+  m_Height: 2.5
   m_Direction: 2
-  m_Center: {x: 0.0039062388, y: -0.00000012792958, z: 0.17558756}
+  m_Center: {x: 0.0039062388, y: -0.00000012792958, z: -0.33}
+--- !u!114 &1957436762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653560419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ab96d8636987c6409b010c4f475cd9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwordHitbox
+  damage: 20
 --- !u!1 &2027365329
 GameObject:
   m_ObjectHideFlags: 0
