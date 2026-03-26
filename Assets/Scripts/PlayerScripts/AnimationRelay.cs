@@ -3,6 +3,7 @@ using UnityEngine;
 public class AnimationRelay : MonoBehaviour
 {
     private PlayerCombat combat;
+    public SwordHitbox sword; // Drag sword object here in the Inspector
 
     void Start()
     {
@@ -18,4 +19,9 @@ public class AnimationRelay : MonoBehaviour
             combat.FinishAttack(attackIndex);
         }
     }
+
+    // New bridge methods for the sword
+    public void StartSensing() => sword?.StartSensing();
+    public void StopSensing() => sword?.StopSensing();
+
 }

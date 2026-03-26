@@ -55,18 +55,31 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float amount, Vector3 hitDirection, float knockbackForce)
+    //public void TakeDamage(float amount/*, Vector3 hitDirection, float knockbackForce*/)
+    //{
+    //    currentHealth -= amount;
+
+    //    // Flatten direction so they don't get knocked into the air/floor
+    //    //hitDirection.y = 0;
+    //    //impactVelocity = hitDirection.normalized * knockbackForce;
+
+    //    if (currentHealth <= 0)
+    //    {
+    //        Die();
+    //    }
+    //}
+
+    // Simplified TakeDamage - only requires the amount
+    public void TakeDamage(float amount)
     {
         currentHealth -= amount;
-
-        // Flatten direction so they don't get knocked into the air/floor
-        hitDirection.y = 0;
-        impactVelocity = hitDirection.normalized * knockbackForce;
+        Debug.Log($"{gameObject.name} took {amount} damage! HP: {currentHealth}");
 
         if (currentHealth <= 0)
         {
             Die();
         }
+
     }
 
     private void Die()
