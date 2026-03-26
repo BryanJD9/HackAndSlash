@@ -197,15 +197,59 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "f192ff69-0154-4e12-8a41-871215be6820",
-                    "path": "<Mouse>/delta",
+                    "name": "2D Vector",
+                    "id": "a3c28800-3800-4c8e-bac8-bb7629b8d2ee",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchTarget",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Up",
+                    "id": "69076106-7104-4ad2-b156-ab94ca58af05",
+                    "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "SwitchTarget",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Down",
+                    "id": "731389ce-947d-4a73-bf49-eacfeb4a4d57",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Left",
+                    "id": "d77a87b0-186e-435e-ab61-49333ee19e80",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Right",
+                    "id": "8b717c53-f6b2-4d16-81ae-0ac9d7380770",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
