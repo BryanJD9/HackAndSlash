@@ -61,6 +61,14 @@ public class PlayerController : MonoBehaviour
     private bool canSwap = true; // Prevent rapid flickering between targets
     private Transform lastTarget; // Track who we were looking at last frame
 
+    [Header("Grapple Settings")]
+    public float pullSpeed = 20f;
+    public float pullStopDistance = 2.5f;
+    private bool isGrappling = false;
+    public LineRenderer grappleLine; // Create a LineRenderer on a child object
+    public Transform grappleOrigin; // The hand/point the line comes out of
+
+
     [Header("UI Settings")]
     public RectTransform reticleUI; // Drag the 'LockOnReticle' Image here
     public Vector3 reticleOffset = Vector3.up;
@@ -150,6 +158,16 @@ public class PlayerController : MonoBehaviour
 
             // Start cooldown so we don't swap 60 times per second
             StartCoroutine(SwapCooldown());
+        }
+    }
+
+    // --- Add this to your InputSystem region ---
+    public void OnGrapple(InputValue value)
+    {
+        // Only grapple if we have a target and aren't already grappling or attacking
+        if (value.isPressed && currentTarget != null && !isGrappling && !combat.isAttacking)
+        {
+            StartCoroutine(GrappleRoutine());
         }
     }
 
@@ -501,7 +519,51 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    private IEnumerator GrappleRoutine()
+    {
+        isGrappling = true;
 
+        // Get the Enemy script from our locked target
+        if (currentTarget.TryGetComponent(out Enemy enemyScript))
+        {
+            // Tell the enemy to stop falling/moving on its own
+            enemyScript.StartPull();
+
+            // Visuals: Turn on the line
+            if (grappleLine != null) grappleLine.enabled = true;
+
+            // Play a "Cast" or "Throw" animation if you have one
+            // TODO: Add a grapple animation if possible
+            animator.SetTrigger("Grapple");
+
+            while (currentTarget != null && Vector3.Distance(transform.position, currentTarget.position) > pullStopDistance)
+            {
+                // Update Line Positions
+                if (grappleLine != null)
+                {
+                    grappleLine.SetPosition(0, grappleOrigin.position);
+                    grappleLine.SetPosition(1, currentTarget.position + Vector3.up); // Aim for chest height
+                }
+
+                // Calculate direction from Enemy to Player
+                Vector3 direction = (transform.position - currentTarget.position).normalized;
+
+                // Move the enemy toward us
+                enemyScript.ExternalMove(direction * pullSpeed);
+
+                // If the player starts an attack mid-pull, cancel the pull so they can hit
+                if (combat.isAttacking) break;
+
+                yield return null;
+            }
+
+            enemyScript.EndPull();
+        }
+
+        // Cleanup
+        if (grappleLine != null) grappleLine.enabled = false;
+        isGrappling = false;
+    }
 
 
 

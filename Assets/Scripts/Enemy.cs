@@ -20,6 +20,9 @@ public class Enemy : MonoBehaviour
     private Vector3 impactVelocity;
     public float drag = 5f;
 
+    // Add this to your Enemy.cs
+    private bool isBeingPulled = false;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -95,6 +98,26 @@ public class Enemy : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+
+    public void StartPull()
+    {
+        isBeingPulled = true;
+        verticalVelocity = 0;
+        //if (animator != null) animator.SetTrigger("HitStagger"); // Or "Airborne"
+    }
+
+    public void EndPull()
+    {
+        isBeingPulled = false;
+    }
+
+    // Update your Move logic in Update() to allow external forces
+    public void ExternalMove(Vector3 velocity)
+    {
+        controller.Move(velocity * Time.deltaTime);
+    }
+
 
 
 }

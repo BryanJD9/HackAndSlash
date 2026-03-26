@@ -136,6 +136,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Grapple"",
+                    ""type"": ""Button"",
+                    ""id"": ""49c064db-7973-4060-a08e-645e09521592"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -336,6 +345,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""SwitchTarget"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f358002-acde-4af7-9c16-dcacfdc0fbf8"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grapple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""747c8556-21d6-4288-bf26-b43f533c0f8a"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grapple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -388,6 +419,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerActions_LockOn = m_PlayerActions.FindAction("LockOn", throwIfNotFound: true);
         m_PlayerActions_Attack = m_PlayerActions.FindAction("Attack", throwIfNotFound: true);
         m_PlayerActions_SwitchTarget = m_PlayerActions.FindAction("SwitchTarget", throwIfNotFound: true);
+        m_PlayerActions_Grapple = m_PlayerActions.FindAction("Grapple", throwIfNotFound: true);
         // Look
         m_Look = asset.FindActionMap("Look", throwIfNotFound: true);
         m_Look_Look = m_Look.FindAction("Look", throwIfNotFound: true);
@@ -477,6 +509,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerActions_LockOn;
     private readonly InputAction m_PlayerActions_Attack;
     private readonly InputAction m_PlayerActions_SwitchTarget;
+    private readonly InputAction m_PlayerActions_Grapple;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerActions".
     /// </summary>
@@ -508,6 +541,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerActions/SwitchTarget".
         /// </summary>
         public InputAction @SwitchTarget => m_Wrapper.m_PlayerActions_SwitchTarget;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerActions/Grapple".
+        /// </summary>
+        public InputAction @Grapple => m_Wrapper.m_PlayerActions_Grapple;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -549,6 +586,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @SwitchTarget.started += instance.OnSwitchTarget;
             @SwitchTarget.performed += instance.OnSwitchTarget;
             @SwitchTarget.canceled += instance.OnSwitchTarget;
+            @Grapple.started += instance.OnGrapple;
+            @Grapple.performed += instance.OnGrapple;
+            @Grapple.canceled += instance.OnGrapple;
         }
 
         /// <summary>
@@ -575,6 +615,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @SwitchTarget.started -= instance.OnSwitchTarget;
             @SwitchTarget.performed -= instance.OnSwitchTarget;
             @SwitchTarget.canceled -= instance.OnSwitchTarget;
+            @Grapple.started -= instance.OnGrapple;
+            @Grapple.performed -= instance.OnGrapple;
+            @Grapple.canceled -= instance.OnGrapple;
         }
 
         /// <summary>
@@ -746,6 +789,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSwitchTarget(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Grapple" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGrapple(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Look" which allows adding and removing callbacks.
